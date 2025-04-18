@@ -25,8 +25,8 @@ To provide a clear and real-time display of the current Coordinated Universal Ti
 ## 4. **Technical Implementation**
 
 #### **Platform**
-- Android (minimum SDK: 23+)
-- Kotlin with Chaquopy for Python integration
+- Android (minimum SDK: 24+)
+- Kotlin with Chaquopy (version 16.0.0) for Python integration
 
 #### **Python Integration**
 - `ctu_time.py` library used via Chaquopy

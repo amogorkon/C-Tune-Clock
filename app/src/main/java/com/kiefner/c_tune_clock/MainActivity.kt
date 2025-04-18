@@ -11,17 +11,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.chaquo.python.PyObject
+import com.chaquo.python.Python
 import com.kiefner.c_tune_clock.ui.theme.CTuneClockTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Initialize Chaquopy
+        val python = Python.getInstance()
+        val ctuModule = python.getModule("ctu")
+
+        // Example: Call a function from ctu.py
+        val longitude = 0.0 // Replace with actual longitude
+        val ctuTime: PyObject = ctuModule.callAttr("now", longitude)
+        val ctuTimeString = ctuTime.toString()
+
         setContent {
             CTuneClockTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Android",
+                        name = ctuTimeString,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

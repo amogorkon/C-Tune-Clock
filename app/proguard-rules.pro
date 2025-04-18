@@ -1,21 +1,21 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Keep Chaquopy/Python classes
+-keep class com.chaquo.python.** { *; }
+-keep class org.kamranzafar.jtar.** { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep Python modules and native libraries
+-keep class com.chaquo.python.internal.** { *; }
+-keep class org.kamranzafar.jtar.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep Kotlin metadata (critical for Compose + Python interop)
+-keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
+-keepclassmembers class **.R* { public static <fields>; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Preserve line numbers for debugging
+-keepattributes SourceFile,LineNumberTable
+
+# Compose-specific rules (if using reflection)
+-keep class androidx.compose.runtime.Composer { *; }
+-keep class kotlinx.coroutines.** { *; }
+
+# Uncomment to hide source file names in release
+# -renamesourcefileattribute SourceFile
