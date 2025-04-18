@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>C-Tune Clock</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #0d1117;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            text-align: center;
+        }
+
+        .label {
+            font-size: 1rem;
+            color: #8b949e;
+            margin-bottom: 2px;
+        }
+        .value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .sun, .moon {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transform: translate(-50%, 50%);
+            transition: left 1s ease, bottom 1s ease;
+            z-index: 0;
+        }
+
+        .sun {
+            background: radial-gradient(circle, #facc15 0%, #fcd34d 70%, transparent 100%);
+            box-shadow: 0 0 20px #fcd34d;
+            opacity: 0.9;
+        }
+
+        .moon {
+            background: radial-gradient(circle, #9ca3af 0%, #6b7280 70%, transparent 100%);
+            box-shadow: 0 0 10px #9ca3af;
+            opacity: 0.6;
+        }
+
+        .horizon {
+            position: absolute;
+            bottom: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: 2;
+        }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50%;
+            background-color: #0d1117;
+            z-index: 3;
+        }
+
+        .clock-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+        }
+
+        .dawn-dusk-container {
+            position: absolute;
+            bottom: 12px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            padding: 0 24px;
+            z-index: 4;
+        }
+
+        .dawn-dusk-block {
+            text-align: center;
+        }
+
+        .dawn-dusk-block .value {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="horizon"></div>
+    <div class="sun" id="sun"></div>
+    <div class="moon" id="moon"></div>
+    <div class="ground"></div>
+
+    <div class="clock-container">
+        <div class="label">Global</div>
+        <div class="value" id="utc-time">Loading...</div>
+
+        <div class="label">Local</div>
+        <div class="value" id="ctu-time">Loading...</div>
+    </div>
+
+    <div class="dawn-dusk-container">
+        <div class="dawn-dusk-block">
+            <div class="label">Dawn</div>
+            <div class="value" id="ctu-dawn">Loading...</div>
+        </div>
+        <div class="dawn-dusk-block">
+            <div class="label">Dusk</div>
+            <div class="value" id="ctu-dusk">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        function updateTimes(utc, ctu, dawn, dusk) {
+            document.getElementById("utc-time").innerText = utc;
+            document.getElementById("ctu-time").innerText = ctu;
+            document.getElementById("ctu-dawn").innerText = dawn;
+            document.getElementById("ctu-dusk").innerText = dusk;
+
+            const hour = parseInt(utc.slice(11, 13));
+            const angle = (hour / 24) * 2 * Math.PI;
+            const sunRadius = 20;
+            const centerX = window.innerWidth / 2;
+            const horizonY = window.innerHeight * 0.5; // horizon line
+            const minDist = Math.min(centerX, horizonY);
+            const orbitRadius = minDist - sunRadius;
+
+            const sunX = centerX + orbitRadius * Math.cos(angle - Math.PI / 2);
+            const sunY = horizonY + orbitRadius * Math.sin(angle - Math.PI / 2);
+            const moonX = centerX + orbitRadius * Math.cos(angle + Math.PI / 2);
+            const moonY = horizonY + orbitRadius * Math.sin(angle + Math.PI / 2);
+
+            document.getElementById("sun").style.left = `${sunX}px`;
+            document.getElementById("sun").style.bottom = `${window.innerHeight - sunY}px`;
+
+            document.getElementById("moon").style.left = `${moonX}px`;
+            document.getElementById("moon").style.bottom = `${window.innerHeight - moonY}px`;
+        }
+    </script>
+</body>
+</html>
