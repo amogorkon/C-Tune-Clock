@@ -25,13 +25,34 @@ To provide a clear and real-time display of the current Coordinated Universal Ti
 ## 4. **Technical Implementation**
 
 #### **Platform**
-- Android (minimum SDK: 24+)
-- Kotlin with Chaquopy (version 16.0.0) for Python integration
+* Android
+* * Minimum SDK: 24 (Android 7.0 Nougat)
+* * Compile & Target SDK: 35 (Android 14)
+* * Android Gradle Plugin (AGP): 8.9.1
+* Kotlin: Version 2.1.0
+* Chaquopy (version 16.0.0) for Python integration
+
+
+|Library|	Version	|Purpose
+|-----------------|----------------|------------------|
+|AndroidX Core KTX	|1.16.0	|Kotlin extensions for Android core
+|AndroidX Lifecycle Runtime KTX	|2.7.0	|Lifecycle-aware components
+|AndroidX Activity Compose	|1.9.0	|Compose integration with Activity
+|Jetpack Compose BOM	|2024.04.00	|Compose platform dependencies
+|Desugar JDK Libs	|2.0.4	|Java 17+ features on older devices
+
+#### Build & Configuration
+* Gradle Setup:
+* * Dependencies and plugins are managed via libs.versions.toml (ensuring consistent versions across the project).
+* * The app’s target API in the manifest now aligns with Gradle settings (tools:targetApi="35"), while retaining a minimum SDK of 24 for broad device compatibility.
+* Native Libraries:
+* * Using Chaquopy, Python modules (e.g., ctu.py) are integrated to compute CTU based on device longitude.
+* * The build is configured to use core library desugaring (with desugar_jdk_libs version 2.0.4) to support new Java APIs on older Android versions.
 
 #### **Python Integration**
-- `ctu_time.py` library used via Chaquopy
-- Core method: `now(longitude: float)`
-- Optional: expose additional functions (e.g., for reference date or roundtrip test)
+* `ctu_time.py` library used via Chaquopy
+* The core Python module (ctu.py) is placed under app/python.
+* Chaquopy is configured in the project to use Python 3.12.
 
 #### **Time Source**
 - UTC: Retrieved using Android system time
@@ -122,6 +143,15 @@ classDiagram
 ```
 
 ## 7. Onboarding
+
+```mermaid
+flowchart TD
+    A[Launch App] --> B{Onboarding Completed?}
+    B -- Yes --> C[Start MainActivity]
+    B -- No --> D[Show OnboardingActivity]
+    D --> E[Complete Onboarding]
+    E --> C
+```
 
 ### 1. Overview
 The onboarding process for C-Tune Clock is crafted to gently introduce users to its distinctive blend of standard Coordinated Universal Time (UTC) and solar-aligned Calculated Time Uncoordinated (CTU). Since CTU is a novel concept for most people, the onboarding must explain it clearly and simply. The aim is to build trust and intrigue while ensuring users grant the necessary location permissions for accurate time computation.
