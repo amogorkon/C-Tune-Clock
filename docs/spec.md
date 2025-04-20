@@ -1,234 +1,158 @@
-# **C-Tune Clock: Android App Specification**
+**C-Tune Clock: Android App Specification (Condensed)**
 
-## 1. **Purpose**
-To provide a clear and real-time display of the current Coordinated Universal Time (UTC) and Calculated Time Uncoordinated (CTU) on an Android device. CTU is based on solar noon and aims to reflect the natural rhythm of the day without time zones or daylight saving time.
+---
 
-## 2. **Key Features**
+## ✨ Purpose
+Real-time display of Coordinated Universal Time (UTC) and Calculated Time Uncoordinated (CTU) on Android. CTU reflects solar noon based on longitude.
 
-- **UTC Time Display:** Shows the current UTC time.
-- **CTU Time Display:** Calculates and shows the CTU time based on the device's longitude.
-- **Real-Time Updates:** UTC and CTU update at a regular interval (e.g., every second).
-- **HTML/CSS Rendering:** Embedded WebView renders dynamic HTML for time display.
-- **Location Awareness:** Retrieves device longitude. Uses a fallback default if access is denied.
+---
 
-## 3. **UI**
+## 🌍 Features Overview
+| Feature / Enhancement       | Description                                                       | Status       |
+|----------------------------|-------------------------------------------------------------------|--------------|
+| UTC Display                | Shows current UTC time                                            | Implemented  |
+| CTU Display                | Computes CTU from device longitude                                | Implemented  |
+| Real-Time Updates          | Updates every second                                              | Implemented  |
+| WebView UI                 | HTML/CSS-based visual display                                     | Implemented  |
+| Location Awareness         | Uses device longitude; fallback based on time zone offset         | Implemented  |
+| Reference Date             | Add CTU reference date display                                    | Planned      |
+| Manual Longitude Input     | User-defined longitude entry                                      | Planned      |
+| Solar Noon/Dusk Info       | Show astronomical context (via `dawn_dusk()`)                     | Planned      |
+| InnerText DOM Updates      | Use JS to avoid full HTML reload                                  | Planned      |
+| Clock Drift Detection      | Detect & optionally sync clock drift                              | Planned      |
 
-- **Single Activity:** Only one screen in the app.
-- **WebView Display:** Displays a simple, styled HTML structure containing:
-  - UTC: Displayed as `YYYY-MM-DD HH:MM:SS UTC`
-  - CTU: Displayed as `HH:MM:SS`
-- **HTML Template:**
-  - Styled using embedded `<style>` tags.
-  - Simple visual layout with clear labels.
-  - Optional enhancements like fade-in/out, bold/large text for emphasis.
+---
 
-## 4. **Technical Implementation**
-
-#### **Platform**
-* Android
-* * Minimum SDK: 24 (Android 7.0 Nougat)
-* * Compile & Target SDK: 35 (Android 14)
-* * Android Gradle Plugin (AGP): 8.9.1
-* Kotlin: Version 2.1.0
-* Chaquopy (version 16.0.0) for Python integration
-
-
-|Library|	Version	|Purpose
-|-----------------|----------------|------------------|
-|AndroidX Core KTX	|1.16.0	|Kotlin extensions for Android core
-|AndroidX Lifecycle Runtime KTX	|2.7.0	|Lifecycle-aware components
-|AndroidX Activity Compose	|1.9.0	|Compose integration with Activity
-|Jetpack Compose BOM	|2024.04.00	|Compose platform dependencies
-|Desugar JDK Libs	|2.0.4	|Java 17+ features on older devices
-
-#### Build & Configuration
-* Gradle Setup:
-* * Dependencies and plugins are managed via libs.versions.toml (ensuring consistent versions across the project).
-* * The app’s target API in the manifest now aligns with Gradle settings (tools:targetApi="35"), while retaining a minimum SDK of 24 for broad device compatibility.
-* Native Libraries:
-* * Using Chaquopy, Python modules (e.g., ctu.py) are integrated to compute CTU based on device longitude.
-* * The build is configured to use core library desugaring (with desugar_jdk_libs version 2.0.4) to support new Java APIs on older Android versions.
-
-#### **Python Integration**
-* `ctu_time.py` library used via Chaquopy
-* The core Python module (ctu.py) is placed under app/python.
-* Chaquopy is configured in the project to use Python 3.12.
-
-#### **Time Source**
-- UTC: Retrieved using Android system time
-- CTU: Computed from Python with current longitude and UTC
-
-#### **Location Handling**
-- Requests `ACCESS_FINE_LOCATION`
-- If granted: uses last known longitude
-- If denied or unavailable: estimate longitude from time zone:
-    - longitude = 15.0 × (time zone offset in hours)
-    - Example: GMT+2 ⟶ longitude ≈ 30.0
-
-```mermaid
-flowchart TD
-    A[Request Location Permission] --> B{Permission Granted?}
-    B -->|Yes| C[Get Device Longitude via LocationManager]
-    B -->|No| D[Estimate from Time Zone]
-    C --> E[Display location accuracy notice]
-    D --> F{Time Zone Available?}
-    F -->|Yes| G[Calculate offset hours]
-    F -->|No| H[Fallback to Greenwich]
-    G --> I[Display estimated CTU offset]
-    H --> J[Display Greenwich fallback notice]
-
-```
-
-#### **Real-Time Updates**
-- Kotlin `Handler` with `Runnable` updates every second
-- Refreshes time and regenerates HTML
-- Loads HTML into WebView each cycle (or better: update via JavaScript)
-
-#### **Error Handling**
-- Python calls wrapped in try/except
-- Fallback CTU message if computation fails
-- Logging to console (or visible toast for user)
-
-## 5. **File Structure**
-#### **Python Integration**
-- The `ctu.py` file containing the CTU logic is included directly in the `app/python` directory. It contains the core functions: now(longitude) and dawn().
-
-
-```mermaid
-graph LR
-    A[app/]
-    A1[java/]
-    A2[python/]
-    A3[res/]
-    A4[assets/]
-
-    A --> A1
-    A --> A2
-    A --> A3
-    A --> A4
-
-    A1 --> B1[com/ctuneclock/]
-    B1 --> B2[MainActivity.kt]
-    B1 --> B3[LocationUtils.kt]
-
-    A2 --> C1[ctu.py]
-
-    A3 --> D1[layout/]
-    D1 --> D2[activity_main.xml]
-    A3 --> D3[values/]
-    D3 --> D4[strings.xml]
-
-    A4 --> E1[time_display.html]
-```
-
-## 6. Architecture
-
+## 📊 UI Structure
 ```mermaid
 classDiagram
-    class MainActivity {
-        +Handler handler
-        +WebView webView
-        +updateTime()
-        +initLocation()
-    }
-    class LocationUtils {
-        +getLongitude(): Float
-    }
-    class PythonBridge {
-        +now(longitude: Float): String
-        +optional(): String
-    }
-    MainActivity --> LocationUtils
-    MainActivity --> PythonBridge
+class WebViewDisplay {
+  +HTML: UTC & CTU
+  +<style>: Embedded CSS (fade, bold, transitions)
+  +Natural theme: Soothing palette, typography
+  +Info Button: Expandable CTU explanation
+}
+```
+- **Single Activity App**: All time info via WebView.
+- **UTC format**: `HH:MM:SS`
+- **CTU format**: `HH:MM:SS`
+
+---
+
+## 🛠 Technical Summary
+
+### 💻 Platform
+- **Android SDK**: Min 24, Target 35
+- **Kotlin**: 2.1.0
+- **Chaquopy**: 16.0.0, Python 3.12
+
+### 📚 Core Libraries
+| Library | Version | Purpose |
+|---|---|---|
+| AndroidX Core KTX | 1.16.0 | Kotlin extensions |
+| Lifecycle Runtime KTX | 2.7.0 | Lifecycle handling |
+| Desugar JDK Libs | 2.0.4 | Java 17 features on old SDKs |
+
+### 📁 File Structure
+```mermaid
+graph TD
+  A[app/] --> B1[java/] --> B2[MainActivity.kt, LocationUtils.kt]
+  A --> C[python/] --> C1[ctu.py]
+  A --> D[res/] --> D1[layout/activity_main.xml, values/strings.xml]
+  A --> E[assets/] --> E1[time_display.html]
 ```
 
-## 7. Onboarding
+### ⚙️ Build/Integration
+- Chaquopy embeds `ctu.py` for CTU computation
+- Uses Gradle + `libs.versions.toml` for dependency control
+- Desugaring enables modern Java features on API 24+
 
+---
+
+## 🔍 Time + Location Logic
+
+### Location Handling Flow
 ```mermaid
 flowchart TD
-    A[Launch App] --> B{Onboarding Completed?}
-    B -- Yes --> C[Start MainActivity]
-    B -- No --> D[Show OnboardingActivity]
-    D --> E[Complete Onboarding]
-    E --> C
+  A[Request Location Permission] --> B{Granted?}
+  B -->|Yes| C[Use LocationManager]
+  B -->|No| D[Estimate via Time Zone]
+  D --> E[15 × offset] --> F[Fallback if missing]
+```
+- Longitude → CTU computed via `ctu.py`
+- UTC from Android system time
+- Default/fallback longitude: ~9.1829 (Korntal-Münchingen)
+
+### Update Cycle
+```mermaid
+sequenceDiagram
+    participant A as Handler
+    participant B as ctu.py
+    participant C as WebView
+    A->>B: Get CTU time
+    B-->>A: Return CTU string
+    A->>C: Inject HTML
+```
+- Kotlin `Handler.postDelayed` updates WebView every second
+- Error handling: try/except in Python, visible toast fallback for user awareness
+
+---
+
+## 🏠 Architecture
+```mermaid
+classDiagram
+  class MainActivity {
+    +initLocation()
+    +updateTime()
+  }
+  class LocationUtils {
+    +getLongitude(): Float
+  }
+  MainActivity --> LocationUtils
 ```
 
-### 1. Overview
-The onboarding process for C-Tune Clock is crafted to gently introduce users to its distinctive blend of standard Coordinated Universal Time (UTC) and solar-aligned Calculated Time Uncoordinated (CTU). Since CTU is a novel concept for most people, the onboarding must explain it clearly and simply. The aim is to build trust and intrigue while ensuring users grant the necessary location permissions for accurate time computation.
+---
 
-### 2. Onboarding Objectives
-- **Introduce CTU:** Explain in plain language that CTU is a natural time system aligned with solar noon, contrasting it with standard UTC. For example, use a tagline like “Time as Nature Intended” to bridge the concept.
-- **Clarify the Difference:** Clearly illustrate the difference between CTU and UTC. Visual aids (diagrams/animations) can be used here to show how the solar cycle affects CTU.
-- **Obtain Location Permissions:** Request access to the device's location. Convey that the longitude is essential to compute CTU accurately. Offer a fallback default if the user denies permission, ensuring that they’re aware of this choice.
-- **Ensure a Smooth Transition:** Guide users step-by-step to the main clock interface so that they feel confident about using the app, with all necessary permissions and explanations clarified.
-
-### 3. Onboarding Flow
-The onboarding division into several screens or steps could look like this:
-
-#### Welcome Screen
-- **Content:** Display the app’s name (C-Tune Clock) and a tagline such as “Time as Nature Intended.”
-- **Purpose:** Create an immediate, positive first impression and hint at the natural, solar-based time concept.
-
-#### CTU Introduction Screen
-- **Content:** Provide a brief explanation of CTU, contrasting it with conventional UTC.
-- **Visuals:** Use simple diagrams or animations to illustrate how solar noon influences the CTU system.
-- **Purpose:** Educate users without overwhelming them with technical details.
-
-#### Location Permission Screen
-- **Content:** Request for access to the device’s location with a message like: “Allow access to determine your local solar time for a precise CTU experience.”
-- **Options:**
-  - **Grant Permission:** If granted, the app retrieves the actual longitude.
-  - **Deny/Skip:** Use the default longitude (e.g., 9.1829), and provide a brief note indicating that this setting might slightly affect the CTU accuracy.
-- **Purpose:** Ensure transparency about why location data is needed and how it benefits the CTU calculation.
-
-#### Confirmation Screen
-- **Content:** Display the detected or default location and confirm the settings.
-- **Options:** Optionally, offer a manual input option for users who want to specify their longitude.
-- **Purpose:** Reinforce user choice and build confidence that the app is working with the correct data.
-
-#### Summary & Start Screen
-- **Content:** Recap the key features of the app and affirm that the CTU system represents a natural timekeeping method.
-- **Button:** A clear call-to-action, such as “Start C-Tune Clock,” transitions users to the main interface.
-- **Purpose:** Finalize the onboarding experience, ensuring the user is informed and ready to use the app.
-
-### 4. UML Activity Diagram for Onboarding
-
+## 🌐 Onboarding Flow
 ```mermaid
 flowchart TD
-    A[Start Onboarding] --> B[Display Welcome Screen]
-    B --> C[Present CTU Concept]
-    C --> D[Request Location Permission]
-    D -- Granted --> E[Retrieve Longitude]
-    D -- Denied --> F[Use Default Location]
-    E --> G[Show Confirmation]
-    F --> G
-    G --> H{User Accepts?}
-    H -- Yes --> I[Summarize & Start]
-    H -- No --> J[Offer Manual Longitude Input]
-    J --> G
-    I --> K[Transition to Main Clock Interface]
-
+  A[Start] --> B[Welcome]
+  B --> C[Explain CTU vs UTC]
+  C --> D[Request Location]
+  D --> E{Granted?}
+  E -- Yes --> F[Confirm Location]
+  E -- No --> G[Use Default]
+  F & G --> H[Option for Manual Input]
+  H --> I[Summarize Features]
+  I --> J[Start MainActivity]
 ```
 
-### 7. Error Handling & Additional Considerations
-- **Permission Denied Handling:** If the user denies access, explicitly display a message stating that the default location (Korntal-Münchingen) will be used. Consider adding a button or link that enables users to revisit permissions later.
-- **Visual Appeal:** Use a natural, soothing color palette and typography that match the app’s theme. Consider subtle animations for smooth transitions between onboarding pages to maintain engagement.
-- **Optional Depth:** Since CTU is a technical concept, provide an “Info” button on the CTU Introduction Screen for users who want to learn more in-depth details via an expandable section or additional screen.
-- **Performance:** Keep the onboarding lightweight and ensure that the transition to the main clock interface is smooth, without unnecessary delays.
+### Design Details
+| Screen              | Purpose                                   |
+|---------------------|--------------------------------------------|
+| Welcome             | Branding & tagline                        |
+| CTU Introduction    | Explain concept visually; optional Info btn |
+| Location Permission | Request longitude access                  |
+| Confirmation        | Show detected or default location         |
+| Summary             | Reiterate benefits and start the clock    |
 
-## **8. Testing & Validation**
-* Include tests for round-trip UTC → CTU → UTC conversion accuracy
-* Simulate locations and time zones to validate fallback logic
-* Ensure resilience to location permission denial
+- **Style Guide**: Natural color palette, gentle transitions, clean typography
 
-## 9. **Potential Enhancements** *(Future Scope)*
+---
 
-- Display the **CTU reference date** under CTU
-- Allow user to **manually input longitude**
-- Show **solar noon time**
-- Integrate **dawn/dusk** data using `dawn_dusk()`
-- Enable **JavaScript innerText updates** to reduce HTML reload cost
-- Implement **clock drift detection** and optional manual sync
+## 🚫 Error Handling
+- Visible toasts for user feedback
+- Logging for dev analysis
+- Revisit permissions from settings link
 
-## 10. **Summary**
-C-Tune Clock is a minimal, effective app that makes use of precise astronomical timing to provide a natural sense of time. The initial scope is well-contained but flexible enough for future scientific and UX enhancements.
+---
+
+## 📝 Testing & Validation
+- UTC↔CTU conversion consistency
+- Simulate denied permissions (fallback accuracy)
+- Device compatibility, runtime permission checks
+
+---
+
+## 🔄 Summary
+C-Tune Clock is a minimalist yet precise time app aligning UTC with solar-based CTU. Built with Kotlin + Python, and embedded WebView, it offers an intuitive interface and extensibility via modular architecture and onboard CTU logic.
