@@ -1,5 +1,7 @@
 """
-CTU (Calculated Time Uncoordinated).
+CTU (Calculated Time Uncoordinated)
+
+ctu.py - Copyright Anselm Kiefner 2025
 
 CTU is a timekeeping system that uses the solar noon as a reference point.
 It adjusts the midnight hour (23:00 to 24:00) to absorb fluctuations in the solar day length.

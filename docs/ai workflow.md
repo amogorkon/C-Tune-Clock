@@ -1,7 +1,8 @@
 # AI Query
 
-* I will post one spec and 3 files. Understand and acknowledge only, don't suggest anything.
-* *post spec
+* I will post one spec and one or more files. Understand and acknowledge only, don't suggest anything.
+* * post spec
+* * post file
 * `Now that I have posted the code, let's start. Here is what I need help with:`
 
 

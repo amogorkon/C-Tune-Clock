@@ -1,4 +1,4 @@
-**C-Tune Clock: Android App Specification (Condensed)**
+**C-Tune Clock: Android App Specification**
 
 ---
 

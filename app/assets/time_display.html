@@ -1,3 +1,4 @@
+<!-- time_display.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -135,11 +136,9 @@
 
             const hour = parseInt(utc.slice(11, 13));
             const angle = (hour / 24) * 2 * Math.PI;
-            const sunRadius = 20;
             const centerX = window.innerWidth / 2;
-            const horizonY = window.innerHeight * 0.5; // horizon line
-            const minDist = Math.min(centerX, horizonY);
-            const orbitRadius = minDist - sunRadius;
+            const horizonY = window.innerHeight * 0.5;
+            const orbitRadius = window.innerWidth / 2;
 
             const sunX = centerX + orbitRadius * Math.cos(angle - Math.PI / 2);
             const sunY = horizonY + orbitRadius * Math.sin(angle - Math.PI / 2);
