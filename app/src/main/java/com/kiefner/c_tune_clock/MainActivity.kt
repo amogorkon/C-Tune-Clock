@@ -1,59 +1,82 @@
+// MainActivity.kt
 package com.kiefner.c_tune_clock
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.chaquo.python.PyObject
+import android.os.Handler
+import android.os.Looper
+import android.webkit.WebView
+import androidx.appcompat.app.AppCompatActivity
 import com.chaquo.python.Python
-import com.kiefner.c_tune_clock.ui.theme.CTuneClockTheme
+import java.text.SimpleDateFormat
+import java.util.*
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+class MainActivity : AppCompatActivity() {
 
-        // Initialize Chaquopy
-        val python = Python.getInstance()
-        val ctuModule = python.getModule("ctu")
+    private lateinit var webView: WebView
+    private val handler = Handler(Looper.getMainLooper())
+    private var longitude: Float = 0.0f
+    private val updateInterval: Long = 1000L // Update every second
 
-        // Example: Call a function from ctu.py
-        val longitude = 0.0 // Replace with actual longitude
-        val ctuTime: PyObject = ctuModule.callAttr("now", longitude)
-        val ctuTimeString = ctuTime.toString()
-
-        setContent {
-            CTuneClockTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = ctuTimeString,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+    private val updateRunnable = object : Runnable {
+        override fun run() {
+            updateTimeDisplay()
+            handler.postDelayed(this, updateInterval)
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        webView = findViewById(R.id.time_webview)
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CTuneClockTheme {
-        Greeting("Android")
+        initLocation()
+        handler.post(updateRunnable)
+    }
+
+    private fun initLocation() {
+        val timezoneOffsetMillis = TimeZone.getDefault().rawOffset
+        val offsetHours = timezoneOffsetMillis / (1000 * 60 * 60)
+        longitude = (15.0 * offsetHours).toFloat()
+    }
+
+    private fun updateTimeDisplay() {
+        val utcNowMillis = System.currentTimeMillis()
+        val utcFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'UTC'", Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+        val utcFormatted = utcFormatter.format(Date(utcNowMillis))
+
+        val python = Python.getInstance()
+        val module = python.getModule("ctu")
+        val ctuFormatted: String = try {
+            module.callAttr("now", longitude).toString()
+        } catch (e: Exception) {
+            "CTU Error"
+        }
+
+        val htmlContent = """
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="utf-8">
+                <title>C-Tune Clock</title>
+                <style>
+                  body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+                  .time { font-size: 2em; margin: 20px 0; }
+                </style>
+              </head>
+              <body>
+                <div class="time">UTC: $utcFormatted</div>
+                <div class="time">CTU: $ctuFormatted</div>
+              </body>
+            </html>
+        """.trimIndent()
+
+        webView.loadDataWithBaseURL(null, htmlContent, "text/html", "utf-8", null)
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacks(updateRunnable)
+        super.onDestroy()
     }
 }
