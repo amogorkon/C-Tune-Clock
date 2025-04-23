@@ -25,8 +25,8 @@ android {
         versionName = "0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        ndk {  // Added ABI filters
-            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86_64"))
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
         }
     }
 
@@ -44,10 +44,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -68,6 +64,13 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        freeCompilerArgs.addAll("-Xcontext-receivers", "-opt-in=kotlin.RequiresOptIn")
+    }
+}
+
 dependencies {
     // Core
     implementation(libs.androidx.core.ktx)
@@ -75,12 +78,15 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     coreLibraryDesugaring(libs.android.desugar.jdk.libs) // Critical for API 24
 
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
 
     // Testing
     testImplementation(libs.junit)
