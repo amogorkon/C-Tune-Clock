@@ -16,9 +16,13 @@ plugins.withType<JavaBasePlugin>().configureEach {
 // Optional: Configure Kotlin compiler for all modules
 plugins.withType<org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin>().configureEach {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions.freeCompilerArgs += listOf(
-            "-Xcontext-receivers",
-            "-opt-in=kotlin.RequiresOptIn"
-        )
+        compilerOptions {
+            freeCompilerArgs.addAll(
+                listOf(
+                    "-Xcontext-receivers",
+                    "-opt-in=kotlin.RequiresOptIn"
+                )
+            )
+        }
     }
 }
