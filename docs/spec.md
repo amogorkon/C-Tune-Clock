@@ -8,7 +8,7 @@ Real-time display of Coordinated Universal Time (UTC) and Calculated Time Uncoor
 ---
 
 ## 🌍 Features Overview
-| Feature / Enhancement       | Description                                                       | Status       |
+| Feature / Enhancement       | Description                                                      | Status       |
 |----------------------------|-------------------------------------------------------------------|--------------|
 | UTC Display                | Shows current UTC time                                            | Implemented  |
 | CTU Display                | Computes CTU from device longitude                                | Implemented  |
@@ -20,7 +20,7 @@ Real-time display of Coordinated Universal Time (UTC) and Calculated Time Uncoor
 | Solar Noon/Dusk Info       | Show astronomical context (via `dawn_dusk()`)                     | Planned      |
 | InnerText DOM Updates      | Use JS to avoid full HTML reload                                  | Planned      |
 | Clock Drift Detection      | Detect & optionally sync clock drift                              | Planned      |
-
+|Screen Always-On| Keep screen on for time display| Implemented|
 ---
 
 ## 📊 UI Structure
@@ -28,7 +28,7 @@ Real-time display of Coordinated Universal Time (UTC) and Calculated Time Uncoor
 classDiagram
 class WebViewDisplay {
   +HTML: UTC & CTU
-  +<style>: Embedded CSS (fade, bold, transitions)
+  +style: Embedded CSS (fade, bold, transitions)
   +Natural theme: Soothing palette, typography
   +Info Button: Expandable CTU explanation
 }
@@ -36,6 +36,10 @@ class WebViewDisplay {
 - **Single Activity App**: All time info via WebView.
 - **UTC format**: `HH:MM:SS`
 - **CTU format**: `HH:MM:SS`
+- **Date**: `YYYY-MM-DD`
+- **Dawn/Dusk**: `HH:MM`
+- **Device Behavior**: Uses `FLAG_KEEP_SCREEN_ON` to maintain visibility
+
 
 ---
 
@@ -109,6 +113,13 @@ classDiagram
     +getLongitude(): Float
   }
   MainActivity --> LocationUtils
+  class WebViewDisplay {
+  +HTML: UTC & CTU
+  +<style>: Embedded CSS
+  +Natural theme
+  +Info Button
+  +keepScreenOn: true
+}
 ```
 
 ---
