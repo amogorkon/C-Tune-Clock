@@ -1,0 +1,12 @@
+<resources>
+    <!-- Base application theme -->
+    <style name="Theme.CTuneClock" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize as needed: colors, typography -->
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!-- your palette items, e.g.: -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+    </style>
+</resources>
