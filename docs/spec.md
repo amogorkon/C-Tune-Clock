@@ -39,7 +39,10 @@ class WebViewDisplay {
 - **Date**: `YYYY-MM-DD`
 - **Dawn/Dusk**: `HH:MM`
 - **Device Behavior**: Uses `FLAG_KEEP_SCREEN_ON` to maintain visibility
-
+- **Theming**: Material Design 3 with light/dark mode support
+- **Primary Palette**: Green (`#81C784` light / `#66BB6A` dark)
+- **Secondary Palette**: Teal (`#4DB6AC` light / `#26A69A` dark)
+- **Dynamic Colors**: Placeholder-ready for Material You
 
 ---
 
@@ -60,11 +63,24 @@ class WebViewDisplay {
 ### 📁 File Structure
 ```mermaid
 graph TD
-  A[app/] --> B1[java/] --> B2[MainActivity.kt, LocationUtils.kt]
-  A --> C[python/] --> C1[ctu.py]
-  A --> D[res/] --> D1[layout/activity_main.xml, values/strings.xml]
-  A --> E[assets/] --> E1[time_display.html]
+  A[app/] --> B[java/com.kiefner.c_tune_clock]
+    B --> B1[preferences/Preferences.kt]
+    B --> B2[utils/LocationUtils.kt]
+    B --> B3[bridge/PythonBridge.kt]
+    B --> B4[MainActivity.kt]
+  A --> C[python/ctu.py]
+  A --> D[res/]
+    D --> D1[layout/activity_main.xml]
+    D --> D2[values/styles.xml, colors.xml]
+  A --> E[assets/time_display.html]
 ```
+
+Package	|Contents|	Key Files
+|---|---|---|
+|preferences|	Settings/configuration|	Preferences.kt (constants)
+|utils|	Reusable helpers|	LocationUtils.kt (GPS/timezone logic)
+|bridge|	External integrations|	PythonBridge.kt (Chaquopy ↔ Python)
+
 
 ### ⚙️ Build/Integration
 - Chaquopy embeds `ctu.py` for CTU computation
