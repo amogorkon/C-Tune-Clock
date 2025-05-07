@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Custom attributes for shape and typography fallback -->
+    <attr name="shapeCornerSmall" format="dimension" />
+    <attr name="shapeCornerMedium" format="dimension" />
+    <attr name="shapeCornerLarge" format="dimension" />
+    <attr name="typographyHeadlineLarge" format="reference" />
+    <attr name="typographyBodyMedium" format="reference" />
+</resources>

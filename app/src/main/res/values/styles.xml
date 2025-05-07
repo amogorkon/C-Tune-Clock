@@ -1,12 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme -->
-    <style name="Theme.CTuneClock" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize as needed: colors, typography -->
-        <item name="android:windowBackground">@android:color/white</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <!-- your palette items, e.g.: -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
+    <!-- Fade window animation style -->
+    <style name="WindowAnimation.Fade">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+    <!-- Add WindowAnimation base style for compatibility -->
+    <style name="WindowAnimation">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+    <!-- Add TextAppearance base style for compatibility -->
+    <style name="TextAppearance">
+        <item name="android:textSize">16sp</item>
     </style>
 </resources>

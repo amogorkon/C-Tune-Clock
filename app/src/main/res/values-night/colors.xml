@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <!-- Dark Theme Colors -->
+    <color name="md_theme_dark_primary">#66BB6A</color>
+    <color name="md_theme_dark_onPrimary">#FFFFFF</color>
+    <color name="md_theme_dark_secondary">#26A69A</color>
+    <color name="md_theme_dark_onSecondary">#FFFFFF</color>
+    <color name="md_theme_dark_background">#121212</color>
+    <color name="md_theme_dark_surface">#1E1E1E</color>
+    <color name="md_theme_dark_onSurface">#CCCCCC</color>
+</resources>

@@ -1,5 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App Light Theme -->
+    <style name="Theme.CTuneClock" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Use app: namespace instead of android: -->
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorSecondary">@color/black</item>
+        <item name="android:windowBackground">@color/black</item>
 
-    <style name="Theme.CTuneClock" parent="android:Theme.Material.Light.NoActionBar" />
+        <!-- System Bars -->
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:navigationBarColor">@color/black</item>
+
+        <!-- Animations -->
+        <item name="android:windowAnimationStyle">@style/Animation.Design.BottomSheetDialog</item>
+    </style>
+
+    <!-- Keep WindowAnimation.Fade as-is -->
 </resources>

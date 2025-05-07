@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="black">#000000</color>
+    <!-- Light Theme -->
+    <color name="md_theme_light_primary">#81C784</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_secondary">#4DB6AC</color>
+    <color name="md_theme_light_onSecondary">#000000</color>
+    <color name="md_theme_light_background">#FAFAFA</color>
+    <color name="md_theme_light_surface">#FFFFFF</color>
+    <color name="md_theme_light_onSurface">#333333</color>
+
+    <!-- Dark Theme (required for lint, fallback values) -->
+    <color name="md_theme_dark_primary">#81C784</color>
+    <color name="md_theme_dark_onPrimary">#FFFFFF</color>
+    <color name="md_theme_dark_secondary">#4DB6AC</color>
+    <color name="md_theme_dark_onSecondary">#000000</color>
+    <color name="md_theme_dark_background">#FAFAFA</color>
+    <color name="md_theme_dark_surface">#FFFFFF</color>
+    <color name="md_theme_dark_onSurface">#333333</color>
+
+    <!-- Dark Theme (in values-night/colors.xml) -->
 </resources>

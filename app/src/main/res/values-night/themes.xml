@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Theme -->
+    <style name="Theme.CTuneClock" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorSecondary">@color/md_theme_dark_secondary</item>
+        <item name="android:windowBackground">@color/md_theme_dark_background</item>
+        <!-- Same structure as light theme -->
+
+        <!-- System Bars -->
+        <item name="android:statusBarColor">@color/md_theme_dark_primary</item>
+        <item name="android:windowLightStatusBar">false</item>         <!-- light icons on dark -->
+        <item name="android:navigationBarColor">@color/md_theme_dark_primary</item>
+
+        <!-- Animations -->
+        <item name="android:windowAnimationStyle">@style/WindowAnimation.Fade</item>
+
+        <!-- Shape Scheme -->
+        <item name="shapeCornerSmall">4dp</item>
+        <item name="shapeCornerMedium">8dp</item>
+        <item name="shapeCornerLarge">12dp</item>
+
+        <!-- Typography Scheme (use local styles instead of android:attr) -->
+        <item name="typographyHeadlineLarge">@style/textAppearanceHeadlineLarge</item>
+        <item name="typographyBodyMedium">@style/textAppearanceBodyMedium</item>
+    </style>
+</resources>
