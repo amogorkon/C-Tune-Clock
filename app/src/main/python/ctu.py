@@ -191,7 +191,7 @@ def dawn_dusk_ctu(lat: float, lon: float, date: datetime) -> Tuple[time, time]:
 if __name__ == "__main__":
     print("Local:", datetime.now().time())
     print("UTC:", datetime.now(timezone.utc).time())
-    lat, lon = 48.7758, 9.1829  # Stuttgart
+    lat, lon = 48.827097, 9.120802
     print("CTU:", now(lon))
     print(
         f"Roundtrip error: {roundtrip_test(lon, datetime.now(timezone.utc)):.6f} seconds"
@@ -199,5 +199,5 @@ if __name__ == "__main__":
     dawn, dusk = dawn_dusk(lat, lon, datetime.now(timezone.utc))
     print(f"Dawn UTC: {dawn.strftime('%H:%M')}")
     print(f"Dusk UTC: {dusk.strftime('%H:%M')}")
-    print(f"Dawn CTU: {utc_to_ctu(dawn, lon)[0].strftime('%H:%M:%S')}")
-    print(f"Dusk CTU: {utc_to_ctu(dusk, lon)[0].strftime('%H:%M:%S')}")
+    print(f"Dawn CTU: {utc_to_ctu(dawn, lon)[0].strftime('%H:%M')}")
+    print(f"Dusk CTU: {utc_to_ctu(dusk, lon)[0].strftime('%H:%M')}")
