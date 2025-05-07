@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>C-Tune Clock</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #0d1117;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+    }
+    .clock-container {
+      display: flex; /* Use flexbox */
+      flex-direction: column; /* Stack time sections */
+      align-items: center;
+      /* No specific styling here for side-by-side, as 'show all' is removed from cycling */
+    }
+
+    .time-section {
+      /* Basic styling for each time block (label + value) */
+      margin: 0 10px;
+      padding: 10px;
+    }
+
+    .label {
+      font-size: 1rem;
+      color: #8b949e;
+      margin-bottom: 2px;
+      white-space: nowrap; /* Prevent label wrapping */
+    }
+    .value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 16px; /* Add space below each value */
+      white-space: nowrap; /* Prevent time value wrapping */
+    }
+  </style>
+</head>
+<body>
+  <div class="clock-container">
+    <div class="time-section" id="utc-section">
+      <div class="label">Global (UTC)</div>
+      <div class="value" id="utc-time">Loading...</div>
+    </div>
+    <div class="time-section" id="local-section">
+      <div class="label" id="local-time-label">Local Time</div>
+      <div class="value" id="local-time">Loading...</div>
+    </div>
+    <div class="time-section" id="ctu-section">
+      <div class="label">Local (CTU)</div>
+      <div class="value" id="ctu-time">Loading...</div>
+    </div>
+  </div>
+
+  <script>
+    let currentState = 0; // 0: Show UTC only, 1: Show Local only, 2: Show CTU only
+
+    const utcSection = document.getElementById("utc-section");
+    const localSection = document.getElementById("local-section");
+    const ctuSection = document.getElementById("ctu-section");
+    // The clockContainer reference is still valid, but not used for cycling logic here.
+    const clockContainer = document.querySelector(".clock-container");
+
+    // Initial display state: Show UTC only
+    utcSection.style.display = "block";
+    localSection.style.display = "none";
+    ctuSection.style.display = "none";
+
+    // Cycle between display states on any click on the body
+    document.body.addEventListener("click", function() {
+      currentState = (currentState + 1) % 3; // Cycle through 0, 1, 2
+
+      // Hide all sections first
+      utcSection.style.display = "none";
+      localSection.style.display = "none";
+      ctuSection.style.display = "none";
+
+      switch (currentState) {
+        case 0: // Show UTC only
+          utcSection.style.display = "block";
+          break;
+        case 1: // Show Local only
+          localSection.style.display = "block";
+          break;
+        case 2: // Show CTU only
+          ctuSection.style.display = "block";
+          break;
+      }
+    });
+
+    function updateTimes(utcTime, localTimeLabel, localTime, ctuTime) {
+      document.getElementById("utc-time").innerText = utcTime;
+      document.getElementById("local-time-label").innerText = localTimeLabel;
+      document.getElementById("local-time").innerText = localTime;
+      document.getElementById("ctu-time").innerText = ctuTime;
+    }
+  </script>
+</body>
+</html>
