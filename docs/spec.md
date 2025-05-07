@@ -3,13 +3,14 @@
 ---
 
 ## ✨ Purpose
-Real-time display of Coordinated Universal Time (UTC) and Calculated Time Uncoordinated (CTU) on Android. CTU reflects solar noon based on longitude.
+Real-time display of Coordinated Universal Time (UTC) **or** Calculated Time Uncoordinated (CTU) on Android. Only one is shown at a time; tap the screen to switch. CTU reflects solar noon based on longitude.
 
 ---
 
 ## 🌍 Features Overview
 | Feature / Enhancement       | Description                                                      | Status       |
 |----------------------------|-------------------------------------------------------------------|--------------|
+| UTC/CTU Toggle             | Shows either UTC or CTU; tap to switch                            | Planned      |
 | UTC Display                | Shows current UTC time                                            | Implemented  |
 | CTU Display                | Computes CTU from device longitude                                | Implemented  |
 | Real-Time Updates          | Updates every second                                              | Implemented  |
@@ -19,18 +20,18 @@ Real-time display of Coordinated Universal Time (UTC) and Calculated Time Uncoor
 | Manual Longitude Input     | User-defined longitude entry                                      | Planned      |
 | Solar Noon/Dusk Info       | Show astronomical context (via `dawn_dusk()`)                     | Planned      |
 | InnerText DOM Updates      | Use JS to avoid full HTML reload                                  | Planned      |
-| Clock Drift Detection      | Detect & optionally sync clock drift                              | Planned      |
-|Screen Always-On| Keep screen on for time display| Implemented|
+| Screen Always-On| Keep screen on for time display                                               | Implemented|
 ---
 
 ## 📊 UI Structure
 ```mermaid
 classDiagram
 class WebViewDisplay {
-  +HTML: UTC & CTU
+  +HTML: UTC or CTU (not both at once)
   +style: Embedded CSS (fade, bold, transitions)
   +Natural theme: Soothing palette, typography
   +Info Button: Expandable CTU explanation
+  +Tap to Switch: Toggle UTC/CTU on tap
 }
 ```
 - **Single Activity App**: All time info via WebView.
@@ -130,7 +131,7 @@ classDiagram
   }
   MainActivity --> LocationUtils
   class WebViewDisplay {
-  +HTML: UTC & CTU
+  +HTML: UTC or CTU
   +<style>: Embedded CSS
   +Natural theme
   +Info Button
