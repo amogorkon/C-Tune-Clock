@@ -220,7 +220,7 @@ def hour_angle(lat: float, dec: float, elev: float = CIVIL_TWILIGHT) -> float:
     return 0.0 if cos_ha > 1 else math.degrees(math.acos(cos_ha))
 
 
-def dawn_dusk(lat: float, lon: float, date: datetime) -> tuple[datetime, datetime]:
+def dawn_dusk_utc(lat: float, lon: float, date: datetime) -> tuple[datetime, datetime]:
     """Dawn/dusk in UTC."""
     noon_utc = calc_noon_utc(lon, date).replace(tzinfo=timezone.utc)
 
@@ -239,6 +239,14 @@ def dawn_dusk(lat: float, lon: float, date: datetime) -> tuple[datetime, datetim
     return dawn, dusk
 
 
+def dawn_dusk(lat: float, lon: float, date: datetime) -> tuple[time, time]:
+    """Dawn/dusk in CTU."""
+    dawn_utc, dusk_utc = dawn_dusk_utc(lat, lon, date)
+    dawn_ctu = utc_to_ctu(dawn_utc, lon)[0]
+    dusk_ctu = utc_to_ctu(dusk_utc, lon)[0]
+    return dawn_ctu, dusk_ctu
+
+
 if __name__ == "__main__":
     print("Local:", datetime.now().time())
     print("UTC:", datetime.now(timezone.utc).time())
@@ -248,7 +256,5 @@ if __name__ == "__main__":
         f"Roundtrip error: {roundtrip_test(lon, datetime.now(timezone.utc)):.6f} seconds"
     )
     dawn, dusk = dawn_dusk(lat, lon, datetime.now(timezone.utc))
-    print(f"Dawn UTC: {dawn.strftime('%H:%M:%S')}")
-    print(f"Dusk UTC: {dusk.strftime('%H:%M:%S')}")
-    print(f"Dawn CTU: {utc_to_ctu(dawn, lon)[0].strftime('%H:%M:%S')}")
-    print(f"Dusk CTU: {utc_to_ctu(dusk, lon)[0].strftime('%H:%M:%S')}")
+    print(f"Dawn CTU: {dawn.strftime('%H:%M')}")
+    print(f"Dusk CTU: {dusk.strftime('%H:%M')}")
