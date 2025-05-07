@@ -9,10 +9,7 @@ android {
     ndkVersion = "25.2.9519653"
     packaging {
         jniLibs.useLegacyPackaging = true
-        jniLibs.excludes += listOf(
-            "**/libcrypto_*.so",  // Redundant OpenSSL libs
-            "**/libssl_*.so"       // Already bundled with Android
-        )
+        // Removed jniLibs.excludes for libcrypto_*.so and libssl_*.so to allow Chaquopy native libs
     }
     namespace = "com.kiefner.c_tune_clock"
     compileSdk = 35
@@ -79,6 +76,8 @@ dependencies {
     coreLibraryDesugaring(libs.android.desugar.jdk.libs) // Critical for API 24
 
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -92,6 +91,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation("androidx.test.espresso:espresso-web:3.5.1")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
 
