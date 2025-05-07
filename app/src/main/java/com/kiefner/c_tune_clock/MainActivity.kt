@@ -1,81 +1,111 @@
-// MainActivity.kt
 package com.kiefner.c_tune_clock
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.chaquo.python.Python
-import java.text.SimpleDateFormat
-import java.util.*
+import com.chaquo.python.android.AndroidPlatform
+import com.kiefner.c_tune_clock.bridge.PythonBridge
+import com.kiefner.c_tune_clock.utils.LocationUtils
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.ZoneId
+
+
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var locationUtils: LocationUtils
     private lateinit var webView: WebView
-    private val handler = Handler(Looper.getMainLooper())
-    private var longitude: Float = 0.0f
-    private val updateInterval: Long = 1000L // Update every second
-
-    private val updateRunnable = object : Runnable {
+    private lateinit var handler: Handler
+    private val updateInterval: Long = 1000L
+    private val updateRunnable: Runnable = object : Runnable {
         override fun run() {
-            updateTimeDisplay()
+            updateCTUTime()
             handler.postDelayed(this, updateInterval)
         }
     }
 
+    private val locationPermissionRequest =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // Once permission is granted, trigger an update.
+                updateCTUTime()
+            }
+        }
+
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        if (!Python.isStarted()) {
+            Python.start(AndroidPlatform(this))
+        }
+
+        handler = Handler(Looper.getMainLooper())
+
+        locationUtils = LocationUtils(this)
+        locationUtils.startLocationUpdates()
         webView = findViewById(R.id.time_webview)
+        webView.settings.javaScriptEnabled = true
 
-        initLocation()
-        handler.post(updateRunnable)
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                // Once the initial page is loaded, proceed to update CTU continuously.
+                if (ContextCompat.checkSelfPermission(
+                        this@MainActivity,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    updateCTUTime()
+                    handler.post(updateRunnable)
+                }
+            }
+        }
+        webView.loadUrl("file:///android_asset/time_display.html")
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            locationPermissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
     }
 
-    private fun initLocation() {
-        val timezoneOffsetMillis = TimeZone.getDefault().rawOffset
-        val offsetHours = timezoneOffsetMillis / (1000 * 60 * 60)
-        longitude = (15.0 * offsetHours).toFloat()
-    }
+    private fun updateCTUTime() {
+        val longitude = locationUtils.getCurrentLongitude()
+        val latitude = locationUtils.getCurrentLatitude()
+        val format = { t: Triple<Int, Int, Int> -> String.format("%02d:%02d:%02d", t.first, t.second, t.third) }
 
-    private fun updateTimeDisplay() {
-        val utcNowMillis = System.currentTimeMillis()
-        val utcFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'UTC'", Locale.US).apply {
+        val formattedUTC = java.text.SimpleDateFormat("HH:mm:ss", Locale.US).apply {
             timeZone = TimeZone.getTimeZone("UTC")
-        }
-        val utcFormatted = utcFormatter.format(Date(utcNowMillis))
+        }.format(Date())
 
-        val python = Python.getInstance()
-        val module = python.getModule("ctu")
-        val ctuFormatted: String = try {
-            module.callAttr("now", longitude).toString()
-        } catch (e: Exception) {
-            "CTU Error"
-        }
+        // Get and format Local time and its time zone label (HH:mm:ss TimeZoneAbbreviation)
+        val nowLocal = ZonedDateTime.now(ZoneId.systemDefault())
+        val formattedLocalTime = nowLocal.format(DateTimeFormatter.ofPattern("HH:mm:ss")) // Just the time part
+        val localTimeZoneLabel = nowLocal.format(DateTimeFormatter.ofPattern("z")) // 'z' gives the time zone abbreviation (e.g., CEST, CET, GMT+1)
 
-        val htmlContent = """
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <meta charset="utf-8">
-                <title>C-Tune Clock</title>
-                <style>
-                  body { font-family: sans-serif; text-align: center; margin-top: 50px; }
-                  .time { font-size: 2em; margin: 20px 0; }
-                </style>
-              </head>
-              <body>
-                <div class="time">UTC: $utcFormatted</div>
-                <div class="time">CTU: $ctuFormatted</div>
-              </body>
-            </html>
-        """.trimIndent()
-
-        webView.loadDataWithBaseURL(null, htmlContent, "text/html", "utf-8", null)
+        val ctuTime = PythonBridge.getCTUTime(longitude)
+        val formattedCTU = ctuTime?.let { format(it) } ?: "??"
+        val js = """
+        updateTimes('$formattedUTC', '$localTimeZoneLabel', '$formattedLocalTime', '$formattedCTU');
+    """.trimIndent()
+        this.webView.evaluateJavascript(js, null)
     }
 
     override fun onDestroy() {
+        // Clean up the handler callbacks
         handler.removeCallbacks(updateRunnable)
         super.onDestroy()
     }
