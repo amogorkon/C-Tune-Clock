@@ -1,13 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample backup rules file; uncomment and customize as necessary.
-   See https://developer.android.com/guide/topics/data/autobackup
-   for details.
-   Note: This file is ignored for devices older that API 31
-   See https://developer.android.com/about/versions/12/backup-restore
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  This file controls which files and directories are included in your app's
+  full backup. Adjust the <include> and <exclude> elements as needed.
 -->
 <full-backup-content>
     <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+      Include shared preferences for key settings (e.g., onboarding completion flag).
+      Add more <include> entries here if additional shared preferences should be backed up.
+    -->
+    <include domain="sharedpref" path="c_tune_prefs.xml"/>
+
+    <!--
+      Optionally, include files or databases if necessary:
+      <include domain="database" path="your_database_name.db"/>
+      <include domain="files" path="important_files/"/>
+    -->
+
+    <!--
+      Exclude temporary files and caches to save space and avoid backing up non-essential data.
+      Extend these rules if you have other folders not needed in the backup.
+    -->
 </full-backup-content>
