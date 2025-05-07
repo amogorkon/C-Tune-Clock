@@ -8,7 +8,7 @@ import com.chaquo.python.Python
  * A singleton bridging Kotlin and Python code using Chaquopy.
  * Modified so that:
  * • getCTUTime returns a Triple<Int, Int, Int> (hour, minute, second)
- * • getAstroData returns a Pair of Triple<Int, Int, Int> (dawn, dusk)
+ * • dawn_dusk returns a Pair of Triple<Int, Int, Int> (dawn, dusk)
  */
 object PythonBridge {
     private val python = Python.getInstance()
@@ -38,25 +38,45 @@ object PythonBridge {
      *   First: Triple<Int, Int, Int> for dawn (hour, minute, second)
      *   Second: Triple<Int, Int, Int> for dusk (hour, minute, second)
      */
-    fun getAstroData(latitude: Float, longitude: Float): Pair<Triple<Int, Int, Int>, Triple<Int, Int, Int>>? {
+    fun dawn_dusk(latitude: Float, longitude: Float): Pair<Triple<Int, Int, Int>, Triple<Int, Int, Int>>? {
         return try {
-            // Pass only latitude and longitude, let Python use datetime.now(timezone.utc)
-            val astroPy = ctuModule.callAttr("dawn_dusk", latitude, longitude)
+            val now = java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)
+            // Build a Python datetime.datetime object using Chaquopy's Python API.
+            val pyDatetime = python.getModule("datetime")
+            val datetimeClass = pyDatetime.get("datetime")!!
+            val timezoneObj = pyDatetime.get("timezone")!!
+            val utcObj = timezoneObj.get("utc")!!
+            val pyDate = datetimeClass.call(
+                now.year,
+                now.monthValue,
+                now.dayOfMonth,
+                now.hour,
+                now.minute,
+                now.second,
+                now.nano / 1_000_000,
+                utcObj
+            )
+            // Call the Python function 'dawn_dusk_ctu' with the datetime object.
+            val astroPy = ctuModule.callAttr("dawn_dusk_ctu", latitude, longitude, pyDate)
             val astroList = astroPy?.asList()
             if (astroList != null && astroList.size >= 2) {
-                val dawnPy = astroList[0]
-                val dawnTriple = Triple(
-                    dawnPy.get("hour")?.toJava(Int::class.java) ?: 0,
-                    dawnPy.get("minute")?.toJava(Int::class.java) ?: 0,
-                    dawnPy.get("second")?.toJava(Int::class.java) ?: 0
-                )
-                val duskPy = astroList[1]
-                val duskTriple = Triple(
-                    duskPy.get("hour")?.toJava(Int::class.java) ?: 0,
-                    duskPy.get("minute")?.toJava(Int::class.java) ?: 0,
-                    duskPy.get("second")?.toJava(Int::class.java) ?: 0
-                )
-                Pair(dawnTriple, duskTriple)
+                val dawnPy = astroList[0] as? PyObject
+                val duskPy = astroList[1] as? PyObject
+                if (dawnPy != null && duskPy != null) {
+                    val dawnTriple = Triple(
+                        (dawnPy.get("hour")?.toJava(Int::class.java)) ?: 0,
+                        (dawnPy.get("minute")?.toJava(Int::class.java)) ?: 0,
+                        (dawnPy.get("second")?.toJava(Int::class.java)) ?: 0
+                    )
+                    val duskTriple = Triple(
+                        (duskPy.get("hour")?.toJava(Int::class.java)) ?: 0,
+                        (duskPy.get("minute")?.toJava(Int::class.java)) ?: 0,
+                        (duskPy.get("second")?.toJava(Int::class.java)) ?: 0
+                    )
+                    Pair(dawnTriple, duskTriple)
+                } else {
+                    null
+                }
             } else {
                 null
             }

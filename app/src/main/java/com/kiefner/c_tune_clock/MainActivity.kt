@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,6 +50,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        hideSystemUI()
+        setContentView(R.layout.activity_main)
         if (!Python.isStarted()) {
             Python.start(AndroidPlatform(this))
         }
@@ -82,6 +85,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            hideSystemUI()
+        }
+    }
+
+    private fun hideSystemUI() {
+        window.decorView.systemUiVisibility = (
+                // Enables immersive sticky mode.
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                        // Makes the content appear under the system bars.
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                        // Hides the navigation bar and status bar.
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_FULLSCREEN
+                )
+    }
+
     private fun updateCTUTime() {
         val longitude = locationUtils.getCurrentLongitude()
         val latitude = locationUtils.getCurrentLatitude()
@@ -91,15 +115,27 @@ class MainActivity : AppCompatActivity() {
             timeZone = TimeZone.getTimeZone("UTC")
         }.format(Date())
 
-        // Get and format Local time and its time zone label (HH:mm:ss TimeZoneAbbreviation)
         val nowLocal = ZonedDateTime.now(ZoneId.systemDefault())
-        val formattedLocalTime = nowLocal.format(DateTimeFormatter.ofPattern("HH:mm:ss")) // Just the time part
+        val formattedLocalTime = nowLocal.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
         val localTimeZoneLabel = nowLocal.format(DateTimeFormatter.ofPattern("z")) // 'z' gives the time zone abbreviation (e.g., CEST, CET, GMT+1)
+
 
         val ctuTime = PythonBridge.getCTUTime(longitude)
         val formattedCTU = ctuTime?.let { format(it) } ?: "??"
+        val dawnDusk = PythonBridge.dawn_dusk(latitude, longitude)
+        val dawnStr: String
+        val duskStr: String
+        if (dawnDusk != null) {
+            val (dawn, dusk) = dawnDusk
+            dawnStr = String.format("%02d:%02d", dawn.first, dawn.second)
+            duskStr = String.format("%02d:%02d", dusk.first, dusk.second)
+        } else {
+            dawnStr = "--:--"
+            duskStr = "--:--"
+        }
+
         val js = """
-        updateTimes('$formattedUTC', '$localTimeZoneLabel', '$formattedLocalTime', '$formattedCTU');
+        updateTimes('$formattedUTC', '$localTimeZoneLabel', '$formattedLocalTime', '$formattedCTU', '$dawnStr', '$duskStr');
     """.trimIndent()
         this.webView.evaluateJavascript(js, null)
     }

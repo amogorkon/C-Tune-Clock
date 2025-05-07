@@ -17,94 +17,205 @@
       height: 100vh;
       margin: 0;
       overflow: hidden;
-      position: relative;
+      position: relative; /* Needed for absolute positioning of solar-times */
       text-align: center;
     }
     .clock-container {
-      display: flex; /* Use flexbox */
-      flex-direction: column; /* Stack time sections */
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      /* No specific styling here for side-by-side, as 'show all' is removed from cycling */
+      justify-content: center;
     }
-
     .time-section {
-      /* Basic styling for each time block (label + value) */
       margin: 0 10px;
       padding: 10px;
+      text-align: left; /* Align content within time-section to the left */
+      opacity: 1; /* Start with opacity 1 */
+      transition: opacity 0.5s ease-in-out; /* Add transition for opacity */
+      /* display will be managed by JS */
     }
-
     .label {
       font-size: 1rem;
       color: #8b949e;
       margin-bottom: 2px;
-      white-space: nowrap; /* Prevent label wrapping */
+      white-space: nowrap;
     }
     .value {
       font-size: 1.8rem;
       font-weight: 600;
       margin-bottom: 16px; /* Add space below each value */
-      white-space: nowrap; /* Prevent time value wrapping */
+      white-space: nowrap;
+    }
+    .time-hm {
+      font-size: 2.4rem; /* About twice as large as .value's default */
+    }
+    .time-sec {
+      font-size: 1.2rem; /* Roughly half the size */
+      margin-left: 4px; /* Add a little space between h:m and seconds */
+    }
+
+    /* --- Styling for Dawn/Dusk Times --- */
+    .solar-times {
+      position: absolute; /* Position relative to the body */
+      bottom: 20px; /* Distance from the bottom */
+      left: 20px; /* Distance from the left */
+      right: 20px; /* Distance from the right */
+      display: flex; /* Use flexbox to space items */
+      justify-content: space-between; /* Push items to the corners */
+      width: calc(100% - 40px); /* Adjust width based on left/right padding */
+      pointer-events: none; /* Prevent clicks on this container */
+      visibility: hidden; /* Hide by default */
+      opacity: 0; /* Start with opacity 0 */
+      transition: visibility 0s, opacity 0.5s linear; /* Add a simple transition */
+    }
+
+    /* Show solar times only when the body has the 'show-ctu' class */
+    .show-ctu .solar-times {
+      visibility: visible; /* Make visible */
+      opacity: 1; /* Fade in */
+    }
+
+    .solar-time {
+      font-size: 1.2rem;
+      color: #8b949e;
+      white-space: nowrap; /* Prevent wrapping */
+    }
+
+    .solar-time .icon {
+      margin-right: 4px;
+    }
+
+    .solar-time .time {
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
-  <div class="clock-container">
-    <div class="time-section" id="utc-section">
-      <div class="label">Global (UTC)</div>
-      <div class="value" id="utc-time">Loading...</div>
-    </div>
-    <div class="time-section" id="local-section">
-      <div class="label" id="local-time-label">Local Time</div>
-      <div class="value" id="local-time">Loading...</div>
-    </div>
-    <div class="time-section" id="ctu-section">
-      <div class="label">Local (CTU)</div>
-      <div class="value" id="ctu-time">Loading...</div>
+<div class="clock-container">
+  <div class="time-section" id="utc-section">
+    <div class="label">Global (UTC)</div>
+    <div class="value" id="utc-time">
+      <span class="time-hm">Loading</span>
+      <span class="time-sec">...</span>
     </div>
   </div>
+  <div class="time-section" id="local-section">
+    <div class="label" id="local-time-label">Local Time</div>
+    <div class="value" id="local-time">
+      <span class="time-hm">Loading</span>
+      <span class="time-sec">...</span>
+    </div>
+  </div>
+  <div class="time-section" id="ctu-section">
+    <div class="label">Local (CTU)</div>
+    <div class="value" id="ctu-time">
+      <span class="time-hm">Loading</span>
+      <span class="time-sec">...</span>
+    </div>
+  </div>
+</div>
 
-  <script>
-    let currentState = 0; // 0: Show UTC only, 1: Show Local only, 2: Show CTU only
+<!-- --- HTML for Dawn/Dusk Times --- -->
+<div class="solar-times">
+  <div id="dawn-time" class="solar-time">
+    <span class="icon">↑</span> <span class="time">--:--</span>
+  </div>
+  <div id="dusk-time" class="solar-time">
+    <span class="icon">↓</span> <span class="time">--:--</span>
+  </div>
+</div>
 
-    const utcSection = document.getElementById("utc-section");
-    const localSection = document.getElementById("local-section");
-    const ctuSection = document.getElementById("ctu-section");
-    // The clockContainer reference is still valid, but not used for cycling logic here.
-    const clockContainer = document.querySelector(".clock-container");
+<script>
+  // Cycle mode: 0: UTC, 1: Local, 2: CTU
+  let currentState = 0;
+  let isAnimating = false; // Flag to prevent rapid clicks during animation
 
-    // Initial display state: Show UTC only
-    utcSection.style.display = "block";
-    localSection.style.display = "none";
-    ctuSection.style.display = "none";
+  const utcSection = document.getElementById("utc-section");
+  const localSection = document.getElementById("local-section");
+  const ctuSection = document.getElementById("ctu-section");
 
-    // Cycle between display states on any click on the body
-    document.body.addEventListener("click", function() {
-      currentState = (currentState + 1) % 3; // Cycle through 0, 1, 2
+  const sections = [utcSection, localSection, ctuSection]; // Array of sections for easy access
+  const fadeDuration = 500; // Match CSS transition duration in milliseconds
 
-      // Hide all sections first
-      utcSection.style.display = "none";
-      localSection.style.display = "none";
-      ctuSection.style.display = "none";
+   // Function to set the display state without animation (for initial load)
+  function setDisplayState(state) {
+      sections.forEach((section, index) => {
+          section.style.display = (index === state) ? "block" : "none";
+          section.style.opacity = (index === state) ? "1" : "0";
+      });
+       // Update solar times visibility (linked to CTU state)
+      document.body.classList.remove("show-ctu");
+       if (state === 2) {
+           document.body.classList.add("show-ctu");
+       }
+  }
 
-      switch (currentState) {
-        case 0: // Show UTC only
-          utcSection.style.display = "block";
-          break;
-        case 1: // Show Local only
-          localSection.style.display = "block";
-          break;
-        case 2: // Show CTU only
-          ctuSection.style.display = "block";
-          break;
-      }
-    });
+  // Initial display state: Show UTC only
+  setDisplayState(currentState);
 
-    function updateTimes(utcTime, localTimeLabel, localTime, ctuTime) {
-      document.getElementById("utc-time").innerText = utcTime;
-      document.getElementById("local-time-label").innerText = localTimeLabel;
-      document.getElementById("local-time").innerText = localTime;
-      document.getElementById("ctu-time").innerText = ctuTime;
+
+  // Toggle display mode on any tap/click on the body
+  document.body.addEventListener("click", function() {
+    if (isAnimating) {
+        return; // Ignore clicks while animating
     }
-  </script>
+
+    isAnimating = true; // Start animation
+
+    const prevSection = sections[currentState];
+    currentState = (currentState + 1) % 3; // Determine next state
+    const nextSection = sections[currentState];
+
+    // Start fade out of current section
+    prevSection.style.opacity = "0";
+
+    // Wait for fade out to complete
+    setTimeout(() => {
+        // After fade out: hide previous section, show next section
+        prevSection.style.display = "none";
+        nextSection.style.display = "block";
+
+        // Start fade in of next section
+        nextSection.style.opacity = "1";
+
+        // Update solar times visibility (linked to CTU state)
+        document.body.classList.remove("show-ctu");
+        if (currentState === 2) {
+            document.body.classList.add("show-ctu");
+        }
+
+        isAnimating = false; // Animation finished
+    }, fadeDuration); // Match the CSS transition duration
+  });
+
+  // Function to update time strings. Assumes time strings in "HH:MM:SS" format for main times.
+  function formatTime(timeString, elementId) {
+    const parentElement = document.getElementById(elementId);
+    const hmElement = parentElement.querySelector(".time-hm");
+    const secElement = parentElement.querySelector(".time-sec");
+
+    // Assuming timeString is always in "HH:MM:SS" format
+    const parts = timeString.split(':');
+    const hoursMinutes = parts[0] + ':' + parts[1]; // HH:MM
+    const seconds = parts[2]; // SS
+
+    hmElement.innerText = hoursMinutes;
+    secElement.innerText = seconds;
+  }
+
+  // This function will be called from Kotlin to update the time values
+  // It receives formatted time strings, local label, and dawn/dusk times
+  function updateTimes(utcTime, localTimeLabel, localTime, ctuTime, dawnTime, duskTime) {
+    // Update the labels and main time values
+    document.getElementById("local-time-label").innerText = localTimeLabel;
+    formatTime(utcTime, "utc-time"); // Assumes utcTime is HH:MM:SS
+    formatTime(localTime, "local-time"); // Assumes localTime is HH:MM:SS
+    formatTime(ctuTime, "ctu-time"); // Assumes ctuTime is HH:MM:SS
+
+    // Update Dawn and Dusk times (assumes HH:mm format)
+    document.querySelector("#dawn-time .time").innerText = dawnTime;
+    document.querySelector("#dusk-time .time").innerText = duskTime;
+  }
+</script>
 </body>
 </html>
