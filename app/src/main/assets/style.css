@@ -1,0 +1,96 @@
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: #0d1117;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  position: relative; /* Needed for absolute positioning of solar-times and sun */
+  text-align: center;
+}
+.clock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.time-section {
+  margin: 0 10px;
+  padding: 10px;
+  text-align: left; /* Align content within time-section to the left */
+  opacity: 1; /* Start with opacity 1 */
+  transition: opacity 0.5s ease-in-out; /* Add transition for opacity */
+  /* display will be managed by JS */
+}
+
+.label {
+  font-size: 1rem;
+  color: #8b949e;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+.value {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 16px; /* Add space below each value */
+  white-space: nowrap;
+}
+.time-hm {
+  font-size: 4rem;
+}
+.time-sec {
+  font-size: 2rem;
+  margin-left: 4px;
+}
+
+/* --- Styling for Dawn/Dusk Times --- */
+.solar-times {
+  position: absolute; /* Position relative to the body */
+  bottom: 20px; /* Distance from the bottom */
+  left: 20px; /* Distance from the left */
+  right: 20px; /* Distance from the right */
+  display: flex; /* Use flexbox to space items */
+  justify-content: space-between; /* Push items to the corners */
+  width: calc(100% - 40px); /* Adjust width based on left/right padding */
+  pointer-events: none; /* Prevent clicks on this container */
+  opacity: 0; /* Start with opacity 0 */
+  transition: opacity 0.5s ease-in-out; /* Add a simple transition */
+  visibility: hidden; /* Hide by default and coordinate with opacity */
+}
+
+/* Show solar times only when the body has the 'show-ctu' class */
+.show-ctu .solar-times {
+  opacity: 1; /* Fade in */
+  visibility: visible; /* Make visible */
+}
+
+.solar-time {
+  font-size: 1.2rem;
+  color: #8b949e;
+  white-space: nowrap; /* Prevent wrapping */
+}
+.solar-time .icon {
+  margin-right: 4px;
+}
+.solar-time .time {
+  font-weight: 600;
+}
+
+/* --- Styling for the Sun Element --- */
+#sun {
+  position: absolute;
+  width: 20px; /* Very small size */
+  height: 20px; /* Very small size */
+  background: yellow;
+  border-radius: 50%;
+  box-shadow: 0 0 10px 5px rgba(255,223,0,0.7); /* Shine effect */
+  transform: translate(-50%, -50%); /* Center the sun element on its coordinates */
+  z-index: 10;
+  opacity: 0; /* Start with opacity 0 */
+  transition: opacity 0.5s ease-in-out; /* Add transition for opacity */
+  display: none; /* Hide by default and manage with JS */
+}
