@@ -2,6 +2,7 @@ package com.kiefner.c_tune_clock
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
@@ -75,6 +76,19 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check if onboarding is complete
+        val preferences = getSharedPreferences("prefs", MODE_PRIVATE)
+        val onboardingComplete = preferences.getBoolean("onboarding_complete", false)
+
+        if (!onboardingComplete) {
+            // Launch OnboardingActivity
+            val intent = Intent(this, OnboardingActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_main)
         hideSystemUI()
         setContentView(R.layout.activity_main)

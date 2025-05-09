@@ -7,17 +7,41 @@
     android:padding="24dp">
 
     <TextView
-        android:id="@+id/info_text"
-        android:textSize="18sp"
+        android:id="@+id/welcomeText"
+        android:textSize="24sp"
         android:textColor="@android:color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Onboarding Info" />
+        android:text="Welcome to C-Tune Clock!" />
+
+    <TextView
+        android:id="@+id/ctuExplanation"
+        android:textSize="18sp"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CTU (Calculated Time Uncoordinated) is a revolutionary timekeeping system aligned with the sun." />
+
+    <TextView
+        android:id="@+id/ctuBenefits"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• Anchored to solar noon\n• Eliminates DST harm\n• Aligns with circadian rhythms" />
 
     <Button
-        android:id="@+id/next_button"
-        android:text="Next"
+        android:id="@+id/learnMoreButton"
+        android:text="Learn More"
         android:layout_marginTop="24dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/startClockButton"
+        android:text="Start Clock"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>
