@@ -150,15 +150,24 @@ classDiagram
 ## 🌐 Onboarding Flow
 ```mermaid
 flowchart TD
-  A[Start] --> B[Welcome]
-  B --> C[Explain CTU vs UTC]
-  C --> D[Request Location]
-  D --> E{Granted?}
-  E -- Yes --> F[Confirm Location]
-  E -- No --> G[Use Default]
-  F & G --> H[Option for Manual Input]
-  H --> I[Summarize Features]
-  I --> J[Start MainActivity]
+    A[Welcome Screen<br>(Branding & "Get Started")]
+    B[CTU Concept Intro<br>(Visual explanation, Info button)]
+    C[Location Permission Request<br>("Required for solar time" message)]
+    D{Permission Granted?}
+    E[Location Confirmed]
+    F[Fallback Option<br>(Manual Input)]
+    G[Feature Summary<br>(Explains UTC/CTU/Local toggle)]
+    H[Onboarding Complete<br>("Start Clock" button)]
+
+    A --> B
+    B --> C
+    C --> D
+    D -- Yes --> E
+    D -- No --> F
+    E --> G
+    F --> G
+    G --> H
+
 ```
 
 ### Design Details
