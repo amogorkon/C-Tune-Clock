@@ -3,7 +3,7 @@
   let dawnSeconds = null;
   let duskSeconds = null;
   // Clock mode: 0 = UTC, 1 = Local, 2 = CTU
-  let currentState = 0;
+let currentState = 0; // Will be set by setDisplayState from Android
   let isAnimating = false;
   const fadeDuration = 500; // Match CSS transition duration in milliseconds
 
@@ -16,24 +16,25 @@
 
   // Function to set the display state without animation (for initial load)
   function setDisplayState(state) {
-      sections.forEach((section, index) => {
-          section.style.display = (index === state) ? "block" : "none";
-          section.style.opacity = (index === state) ? "1" : "0";
-      });
+    currentState = state;
+    sections.forEach((section, index) => {
+        section.style.display = (index === state) ? "block" : "none";
+        section.style.opacity = (index === state) ? "1" : "0";
+    });
 
-       // Set initial display/opacity for sun and solar times
-      document.body.classList.remove("show-ctu");
-      sunElement.style.display = "none";
-      sunElement.style.opacity = "0";
+    // Set initial display/opacity for sun and solar times
+    document.body.classList.remove("show-ctu");
+    sunElement.style.display = "none";
+    sunElement.style.opacity = "0";
 
-      if (state === 2) { // If initial state is CTU
-          // Calculate and set initial sun position before making it visible
-          updateSunPosition();
+    if (state === 2) { // If initial state is CTU
+        // Calculate and set initial sun position before making it visible
+        updateSunPosition();
 
-          document.body.classList.add("show-ctu"); // Show solar times
-          sunElement.style.display = "block"; // Show sun block
-          sunElement.style.opacity = "1"; // Show sun opacity
-      }
+        document.body.classList.add("show-ctu"); // Show solar times
+        sunElement.style.display = "block"; // Show sun block
+        sunElement.style.opacity = "1"; // Show sun opacity
+    }
   }
 
   // Initialize to the default mode (UTC)
@@ -119,6 +120,10 @@
 
     const prevState = currentState;
     currentState = (currentState + delta + 3) % 3;
+    // Save mode to Android preferences if bridge is available
+    if (window.AndroidBridge && window.AndroidBridge.saveClockMode) {
+        window.AndroidBridge.saveClockMode(currentState);
+    }
     const prevSection = sections[prevState];
     const nextSection = sections[currentState];
 

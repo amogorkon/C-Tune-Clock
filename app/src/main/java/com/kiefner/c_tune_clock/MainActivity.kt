@@ -26,6 +26,32 @@ import java.time.ZoneId
 
 
 class MainActivity : AppCompatActivity() {
+    // Show a toast for user-visible error feedback
+    private fun showErrorToast(message: String) {
+        runOnUiThread {
+            android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_LONG).show()
+        }
+    }
+    // Preference helpers for clock mode
+    private fun saveClockMode(mode: Int) {
+        getSharedPreferences("prefs", MODE_PRIVATE)
+            .edit()
+            .putInt("clock_mode", mode)
+            .apply()
+    }
+
+    private fun loadClockMode(): Int {
+        return getSharedPreferences("prefs", MODE_PRIVATE)
+            .getInt("clock_mode", 0)
+    }
+
+    // JS bridge for saving mode from JS
+    inner class JSBridge {
+        @android.webkit.JavascriptInterface
+        fun saveClockMode(mode: Int) {
+            this@MainActivity.saveClockMode(mode)
+        }
+    }
 
     private lateinit var locationUtils: LocationUtils
     private lateinit var webView: WebView
@@ -59,12 +85,24 @@ class MainActivity : AppCompatActivity() {
         handler = Handler(Looper.getMainLooper())
 
         locationUtils = LocationUtils(this)
+        // Set up error callback: only show toast if user can act (permission issue)
+        locationUtils.onError = { e ->
+            if (e is SecurityException) {
+                showErrorToast("Location permission required for solar time features.")
+            } // else: log only, not shown to user
+        }
         locationUtils.startLocationUpdates()
         webView = findViewById(R.id.time_webview)
         webView.settings.javaScriptEnabled = true
 
+        // Add JS bridge for saving mode
+        webView.addJavascriptInterface(JSBridge(), "AndroidBridge")
+
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
+                // Set initial mode from preferences
+                val initialMode = loadClockMode()
+                webView.evaluateJavascript("setDisplayState(" + initialMode + ");", null)
                 // Once the initial page is loaded, proceed to update CTU continuously.
                 if (ContextCompat.checkSelfPermission(
                         this@MainActivity,

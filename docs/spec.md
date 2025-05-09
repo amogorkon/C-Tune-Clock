@@ -10,17 +10,17 @@ Real-time display of Coordinated Universal Time (UTC) **or** Calculated Time Unc
 ## 🌍 Features Overview
 | Feature / Enhancement       | Description                                                      | Status       |
 |----------------------------|-------------------------------------------------------------------|--------------|
-| UTC/CTU Toggle             | Shows either UTC or CTU; tap to switch                            | Planned      |
+| UTC/CTU/Local Toggle       | Shows UTC, CTU, or Local time; tap to switch; mode is persisted   | Implemented  |
 | UTC Display                | Shows current UTC time                                            | Implemented  |
 | CTU Display                | Computes CTU from device longitude                                | Implemented  |
+| Local Time Display         | Shows device local time                                           | Implemented  |
 | Real-Time Updates          | Updates every second                                              | Implemented  |
 | WebView UI                 | HTML/CSS-based visual display                                     | Implemented  |
 | Location Awareness         | Uses device longitude; fallback based on time zone offset         | Implemented  |
-| Reference Date             | Add CTU reference date display                                    | Planned      |
-| Manual Longitude Input     | User-defined longitude entry                                      | Planned      |
-| Solar Noon/Dusk Info       | Show astronomical context (via `dawn_dusk()`)                     | Planned      |
-| InnerText DOM Updates      | Use JS to avoid full HTML reload                                  | Planned      |
-| Screen Always-On| Keep screen on for time display                                               | Implemented|
+| Clock Mode Persistence     | Remembers last display mode (UTC/CTU/Local) across restarts       | Implemented  |
+| Solar Noon/Dusk Info       | Show astronomical context (via `dawn_dusk()`)                     | Implemented   |
+| InnerText DOM Updates      | Use JS to avoid full HTML reload                                  | Implemented   |
+| Screen Always-On           | Keep screen on for time display                                   | Implemented  |
 ---
 
 ## 📊 UI Structure
@@ -31,7 +31,7 @@ class WebViewDisplay {
   +style: Embedded CSS (fade, bold, transitions)
   +Natural theme: Soothing palette, typography
   +Info Button: Expandable CTU explanation
-  +Tap to Switch: Toggle UTC/CTU on tap
+  +Tap to Switch: Toggle UTC/CTU/Local on tap (mode is persisted)
 }
 ```
 - **Single Activity App**: All time info via WebView.
@@ -48,6 +48,12 @@ class WebViewDisplay {
 ---
 
 ## 🛠 Technical Summary
+
+### 🕒 Clock Mode Persistence
+- The current clock display mode (UTC, CTU, or Local) is saved to Android SharedPreferences whenever the user switches modes.
+- On app startup, the last-used mode is loaded from preferences and injected into the WebView via the Android-JS bridge.
+- The JavaScript UI calls `AndroidBridge.saveClockMode(mode)` to persist the mode, and receives the initial mode from Android via `setDisplayState(mode)`.
+- This ensures the user's preferred display mode is restored across app restarts.
 
 ### 💻 Platform
 - **Android SDK**: Min 24, Target 35
