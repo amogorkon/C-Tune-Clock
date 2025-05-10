@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About CTU Time Clock</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+
+        <h1>About CTU Time Clock</h1>
+
+        <section>
+            <h2>What is CTU Time?</h2>
+            <p>
+                <strong>CTU (Calculated Time Uncoordinated)</strong> is a timekeeping system designed to align with the natural solar day.
+            </p>
+            <ul>
+                <li><strong>12:00 CTU</strong> is always aligned with your local solar noon.</li>
+                <li><strong>00:00 CTU</strong> is always aligned with your local solar midnight.</li>
+                <li>The minor daily variations in the solar day are absorbed by dynamically adjusting the length of the <strong>final hour (23:00 to 00:00 CTU)</strong>. All other hours are standard 60 minutes.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why Use CTU?</h2>
+            <ul>
+                <li><strong>No Daylight Saving Time:</strong> CTU eliminates the need for disruptive clock changes by staying anchored to the sun.</li>
+                <li><strong>Circadian Alignment:</strong> By reflecting the true solar day, CTU helps you intuitively align with your body's natural sleep-wake cycle.</li>
+                <li><strong>Universal Solar Context:</strong> "15:00 CTU" gives you a sense of the sun's position relative to noon, no matter where you are on Earth.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Using the Clock App</h2>
+            <ul>
+                <li><strong>Time Modes:</strong> The clock displays three time types:
+                    <ul>
+                        <li><strong>Global (UTC):</strong> Standard Coordinated Universal Time.</li>
+                        <li><strong>Local Time:</strong> Your device's current time zone.</li>
+                        <li><strong>Local (CTU):</strong> The calculated CTU time for your current location.</li>
+                    </ul>
+                </li>
+                <li><strong>Switching Modes:</strong> Swipe left or right on the clock display to cycle through the UTC, Local, and CTU time modes.</li>
+                <li><strong>Date Display:</strong> Below the main time, you'll see the Weekday and ISO Week number (e.g., "We 34"). Tap this label to toggle the display to the full date (YYYY-MM-DD). It will automatically switch back after a few seconds.</li>
+                <li><strong>Sun Animation (CTU Mode):</strong> In CTU mode, a small sun icon animates along an ellipse, visually representing the sun's position relative to solar noon (top of the ellipse at 12:00 CTU) and solar midnight (bottom at 00:00 CTU).</li>
+                <li><strong>Dawn/Dusk Times (CTU Mode):</strong> When in CTU mode, the calculated dawn (↑) and dusk (↓) times for your location are shown at the bottom, providing additional solar context. The sun icon changes color around these times.</li>
+            </ul>
+        </section>
+
+        <section class="text-center text-sm text-gray-500 mt-8">
+            <p>CTU Time: Reconnecting with the Rhythm of the Day.</p>
+        </section>
+
+    </div>
+</body>
+</html>

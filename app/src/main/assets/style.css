@@ -1,7 +1,7 @@
 body {
-  font-family: "Segoe UI", sans-serif;
-  background: #0d1117;
-  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  background-color: #0d1117; /* Dark background */
+  color: #ffffff; /* White text */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,6 +11,7 @@ body {
   overflow: hidden;
   position: relative; /* Needed for absolute positioning */
   text-align: center;
+  line-height: 1.6;
 }
 
 .clock-container {
@@ -162,4 +163,59 @@ body {
      visibility: visible; /* Make visible */
      opacity: 1; /* Fade in */
      transition: opacity 0.3s ease-in-out, visibility 0s linear 0s; /* No delay on becoming visible */
+}
+
+/* --- Integrated Styles from README.html --- */
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  background-color: #1f2937; /* Tailwind's bg-gray-800 */
+  padding: 2rem; /* Tailwind's p-8 */
+  border-radius: 0.5rem; /* Tailwind's rounded-lg */
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05); /* Tailwind's shadow-xl */
+}
+
+h1 {
+  font-size: 1.875rem; /* Tailwind's text-3xl */
+  font-weight: 700; /* Tailwind's font-bold */
+  text-align: center;
+  margin-bottom: 1.5rem; /* Tailwind's mb-6 */
+  color: #facc15; /* Tailwind's text-yellow-400 */
+}
+
+h2 {
+  font-size: 1.5rem; /* Tailwind's text-2xl */
+  font-weight: 600; /* Tailwind's font-semibold */
+  margin-bottom: 1rem; /* Tailwind's mb-4 */
+}
+
+p, ul {
+  color: #d1d5db; /* Tailwind's text-gray-300 */
+  margin-bottom: 1rem; /* Tailwind's mb-4 */
+}
+
+ul {
+  list-style-type: disc;
+  padding-left: 1.5rem; /* Tailwind's list-inside */
+}
+
+ul ul {
+  list-style-type: circle; /* Tailwind's list-circle */
+  margin-left: 1rem; /* Tailwind's ml-4 */
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-sm {
+  font-size: 0.875rem; /* Tailwind's text-sm */
+}
+
+.text-gray-500 {
+  color: #6b7280; /* Tailwind's text-gray-500 */
+}
+
+.mt-8 {
+  margin-top: 2rem; /* Tailwind's mt-8 */
 }

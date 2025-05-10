@@ -27,7 +27,7 @@ class OnboardingActivity : AppCompatActivity() {
         binding.learnMoreButton.setOnClickListener {
             // Open the full CTU README in a WebView or browser
             val intent = Intent(this, WebViewActivity::class.java)
-            intent.putExtra("url", "file:///android_asset/docs/ctu_time_README.html")
+            intent.putExtra("url", "file:///android_asset/docs/README.html")
             startActivity(intent)
         }
 
