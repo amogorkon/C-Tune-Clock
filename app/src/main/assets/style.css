@@ -9,22 +9,39 @@ body {
   height: 100vh;
   margin: 0;
   overflow: hidden;
-  position: relative; /* Needed for absolute positioning of solar-times and sun */
+  position: relative; /* Needed for absolute positioning */
   text-align: center;
 }
+
 .clock-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* Default state for sections (hidden) */
+  /* JS will control display/visibility/opacity */
 }
+
 .time-section {
   margin: 0 10px;
   padding: 10px;
   text-align: left; /* Align content within time-section to the left */
-  opacity: 1; /* Start with opacity 1 */
-  transition: opacity 0.5s ease-in-out; /* Add transition for opacity */
-  /* display will be managed by JS */
+  /* Initial hidden state */
+  opacity: 0;
+  visibility: hidden;
+  display: none; /* Initially hidden from layout */
+  /* Transition for opacity and visibility */
+  /* Visibility becomes hidden AFTER opacity is 0 (delay) */
+  /* Visibility becomes visible BEFORE opacity goes to 1 (no delay) */
+  transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
+}
+
+/* Style for the active time section - managed by JS */
+.time-section.active {
+    display: block; /* Make block when active */
+    visibility: visible; /* Make visible */
+    opacity: 1; /* Fade in */
+    transition: opacity 0.5s ease-in-out, visibility 0s linear 0s; /* No delay on becoming visible */
 }
 
 .label {
@@ -57,15 +74,18 @@ body {
   justify-content: space-between; /* Push items to the corners */
   width: calc(100% - 40px); /* Adjust width based on left/right padding */
   pointer-events: none; /* Prevent clicks on this container */
-  opacity: 0; /* Start with opacity 0 */
-  transition: opacity 0.5s ease-in-out; /* Add a simple transition */
-  visibility: hidden; /* Hide by default and coordinate with opacity */
+  /* Initial hidden state */
+  opacity: 0;
+  visibility: hidden;
+  /* Transition for opacity and visibility */
+  transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
 }
 
-/* Show solar times only when the body has the 'show-ctu' class */
+/* Show solar times when CTU is active - managed by JS adding/removing '.show-ctu' class to body */
 .show-ctu .solar-times {
   opacity: 1; /* Fade in */
   visibility: visible; /* Make visible */
+  transition: opacity 0.5s ease-in-out, visibility 0s linear 0s; /* No delay on becoming visible */
 }
 
 .solar-time {
@@ -90,7 +110,56 @@ body {
   box-shadow: 0 0 10px 5px rgba(255,223,0,0.7); /* Shine effect */
   transform: translate(-50%, -50%); /* Center the sun element on its coordinates */
   z-index: 10;
-  opacity: 0; /* Start with opacity 0 */
-  transition: opacity 0.5s ease-in-out; /* Add transition for opacity */
-  display: none; /* Hide by default and manage with JS */
+  /* Initial hidden state */
+  opacity: 0;
+  visibility: hidden;
+   /* Transition for opacity and visibility */
+  transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
+  /* display will be managed by JS */
+}
+
+/* Show sun when CTU is active - managed by JS adding/removing '.show-ctu' class to body */
+.show-ctu #sun {
+  opacity: 1; /* Fade in */
+  visibility: visible; /* Make visible */
+  transition: opacity 0.5s ease-in-out, visibility 0s linear 0s; /* No delay on becoming visible */
+}
+
+
+/* --- Styling for Date Elements --- */
+.week-label, .full-date {
+    position: absolute; /* Position them on top of each other */
+    bottom: 80px; /* Adjust as needed, above solar times */
+    left: 0; /* Span full width to center text */
+    right: 0;
+    width: 100%; /* Span full width */
+    text-align: center;
+    font-size: 1.2rem;
+    color: #8b949e;
+    /* Initial hidden state */
+    opacity: 0;
+    visibility: hidden;
+    display: none; /* Initially hidden from layout */
+    /* Transition for opacity and visibility */
+    transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s; /* Use shorter duration for internal toggle */
+    pointer-events: auto; /* Allow clicks */
+    cursor: pointer; /* Indicate clickable */
+}
+
+/* Adjust the position of the date elements to avoid overlapping with the clock */
+#week-label, #full-date {
+  position: absolute;
+  top: 70%; /* Adjust this value to ensure no overlap with the clock */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2em; /* Adjust font size if needed */
+  text-align: center;
+}
+
+/* Style for the active date element - managed by JS */
+.week-label.active, .full-date.active {
+     display: block; /* Make block when active */
+     visibility: visible; /* Make visible */
+     opacity: 1; /* Fade in */
+     transition: opacity 0.3s ease-in-out, visibility 0s linear 0s; /* No delay on becoming visible */
 }
