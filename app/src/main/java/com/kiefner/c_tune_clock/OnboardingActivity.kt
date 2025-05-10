@@ -21,7 +21,7 @@ class OnboardingActivity : AppCompatActivity() {
         // Set up the onboarding content
         binding.welcomeText.text = "Welcome to C-Tune Clock!"
         binding.ctuExplanation.text = "CTU (Calculated Time Uncoordinated) is a revolutionary timekeeping system aligned with the sun."
-        binding.ctuBenefits.text = "\u2022 Anchored to solar noon\n\u2022 Eliminates DST harm\n\u2022 Aligns with circadian rhythms"
+        binding.ctuBenefits.text = "\u2022 Anchored to solar noon\n\u2022 Eliminates DST harm\n\u2022 Aligns with circadian rhythms\n\u2022 Weekday/Week toggle: Tap to reveal full date"
 
         // Set up button listeners
         binding.learnMoreButton.setOnClickListener {

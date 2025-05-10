@@ -43,12 +43,8 @@ class WebViewCTUDisplayTest {
             var ready = false
             try {
                 onWebView().perform(
-                    androidx.test.espresso.web.webdriver.DriverAtoms.evaluateJavascript(
-                        "window.CTU_READY === true"
-                    )
-                ).check { result, _ ->
-                    ready = result?.toString() == "true"
-                }
+                    findElement(Locator.ID, "time_webview")
+                ).check(webMatches(getText(), containsString("CTU_READY")))
             } catch (_: Throwable) {
                 // Ignore transient errors while WebView is loading
             }

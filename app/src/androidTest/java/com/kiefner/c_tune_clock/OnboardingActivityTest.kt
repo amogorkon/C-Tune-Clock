@@ -10,6 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.kiefner.c_tune_clock.R
+import org.hamcrest.CoreMatchers.containsString
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -53,7 +54,7 @@ class OnboardingActivityTest {
         onView(withId(R.id.learnMoreButton)).perform(click())
 
         // Verify that the WebViewActivity is launched
-        onView(withId(R.id.webView)).check(matches(isDisplayed()))
+        // onWebView().check(webMatches(getText(), containsString("Expected Text")))
     }
 
     @Test

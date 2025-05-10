@@ -193,8 +193,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        // Clean up the handler callbacks
-        handler.removeCallbacks(updateRunnable)
+        // Clean up the handler callbacks if initialized
+        if (::handler.isInitialized) {
+            handler.removeCallbacks(updateRunnable)
+        }
         super.onDestroy()
     }
 }
