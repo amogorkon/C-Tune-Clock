@@ -10,7 +10,7 @@ body {
   margin: 0;
   overflow: hidden;
   position: relative; /* Needed for absolute positioning */
-  text-align: center;
+  text-align: left; /* Align all text to the left */
   line-height: 1.6;
 }
 
@@ -176,11 +176,13 @@ body {
 }
 
 h1 {
-  font-size: 1.875rem; /* Tailwind's text-3xl */
+  display: block; /* Ensure the element is displayed */
+  font-size: 2rem; /* Adjust font size for better visibility */
   font-weight: 700; /* Tailwind's font-bold */
-  text-align: center;
-  margin-bottom: 1.5rem; /* Tailwind's mb-6 */
-  color: #facc15; /* Tailwind's text-yellow-400 */
+  text-align: center; /* Center align the header */
+  margin: 20px 10px; /* Add margin to ensure it fits within the screen */
+  padding: 0; /* Remove unnecessary padding */
+  color: #ffffff; /* Ensure the text color is visible */
 }
 
 h2 {
@@ -191,7 +193,8 @@ h2 {
 
 p, ul {
   color: #d1d5db; /* Tailwind's text-gray-300 */
-  margin-bottom: 1rem; /* Tailwind's mb-4 */
+  margin: 0 0 1rem 0; /* Add spacing between elements */
+  display: block; /* Ensure block-level display for readability */
 }
 
 ul {

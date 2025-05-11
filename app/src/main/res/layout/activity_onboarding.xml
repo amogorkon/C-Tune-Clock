@@ -9,26 +9,18 @@
     <TextView
         android:id="@+id/welcomeText"
         android:textSize="24sp"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Welcome to C-Tune Clock!" />
 
     <TextView
         android:id="@+id/ctuExplanation"
-        android:textSize="18sp"
-        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CTU (Calculated Time Uncoordinated) is a revolutionary timekeeping system aligned with the sun." />
-
-    <TextView
-        android:id="@+id/ctuBenefits"
-        android:textSize="16sp"
         android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="• Anchored to solar noon\n• Eliminates DST harm\n• Aligns with circadian rhythms" />
+        android:text="CTU (Calculated Time Uncoordinated) is a revolutionary timekeeping system aligned with the sun."
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/learnMoreButton"

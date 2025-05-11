@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         // Check if onboarding is complete
         val preferences = getSharedPreferences("prefs", MODE_PRIVATE)
         val onboardingComplete = preferences.getBoolean("onboarding_complete", false)
@@ -89,6 +90,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // Proceed directly to the main content
         setContentView(R.layout.activity_main)
         hideSystemUI()
         setContentView(R.layout.activity_main)
@@ -198,5 +200,16 @@ class MainActivity : AppCompatActivity() {
             handler.removeCallbacks(updateRunnable)
         }
         super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        // Set onboarding_complete to false
+        val preferences = getSharedPreferences("prefs", MODE_PRIVATE)
+        preferences.edit().putBoolean("onboarding_complete", false).apply()
+
+        // Navigate back to OnboardingActivity
+        val intent = Intent(this, OnboardingActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

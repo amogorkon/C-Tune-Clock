@@ -32,5 +32,9 @@
             android:name=".OnboardingActivity"
             android:exported="true"
             android:theme="@style/Theme.CTuneClock" />
+        <activity
+            android:name=".WebViewActivity"
+            android:exported="true"
+            android:theme="@style/Theme.CTuneClock" />
     </application>
 </manifest>

@@ -18,23 +18,18 @@ class OnboardingActivity : AppCompatActivity() {
 
         preferences = getSharedPreferences("prefs", MODE_PRIVATE)
 
-        // Set up the onboarding content
-        binding.welcomeText.text = "Welcome to C-Tune Clock!"
-        binding.ctuExplanation.text = "CTU (Calculated Time Uncoordinated) is a revolutionary timekeeping system aligned with the sun."
-        binding.ctuBenefits.text = "\u2022 Anchored to solar noon\n\u2022 Eliminates DST harm\n\u2022 Aligns with circadian rhythms\n\u2022 Weekday/Week toggle: Tap to reveal full date"
-
         // Set up button listeners
         binding.learnMoreButton.setOnClickListener {
-            // Open the full CTU README in a WebView or browser
             val intent = Intent(this, WebViewActivity::class.java)
-            intent.putExtra("url", "file:///android_asset/docs/README.html")
             startActivity(intent)
+            finish()
         }
 
         binding.startClockButton.setOnClickListener {
-            // Mark onboarding as complete and proceed to MainActivity
+            // Set the onboarding_complete flag to true
             preferences.edit().putBoolean("onboarding_complete", true).apply()
-            val intent = Intent(this, MainActivity::class.java)
+
+            val intent = Intent(this@OnboardingActivity, MainActivity::class.java)
             startActivity(intent)
             finish()
         }
